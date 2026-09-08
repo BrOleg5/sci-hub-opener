@@ -1,5 +1,8 @@
 # Sci-Hub PDF Opener (Firefox)
 
+> [!CAUTION]
+> This project's code is 100% AI-generated.
+
 This extension opens the PDF of a scientific article **directly from Sci-Hub
 storage** (`https://<mirror>/storage/…/….pdf` or `/downloads/…/….pdf`), without the
 Sci-Hub bottom panel. The DOI is extracted from any page the same way the Zotero
