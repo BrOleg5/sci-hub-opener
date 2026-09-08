@@ -10,8 +10,10 @@ JSON-LD, canonical link/URL, links to `doi.org`, and as a last resort the page t
 
 - **Address-bar button** — appears only on pages where a DOI was found (journal
   articles, databases, conference proceedings and the like) and opens the PDF.
-- **Toolbar button** — one click opens the PDF of the article on the current page.
-  When a DOI is found, the icon shows a "DOI" badge (the DOI itself is in the tooltip).
+- **Toolbar button** — opens a popup with the DOI found on the current page (editable),
+  an "Open PDF" button and all settings. When a DOI is found, the icon shows a "DOI"
+  badge (the DOI itself is in the tooltip). The same page serves as the options page
+  in the Add-ons Manager.
 - **Keyboard shortcut** `Alt+Shift+S` (change it under "Manage Extension Shortcuts").
 - **Context menu** (items appear only where a DOI is present):
   - on a DOI link (`doi.org/…`, `…/doi/10.…` or a DOI in the link text) — "Open DOI link in Sci-Hub";
@@ -88,7 +90,7 @@ content/doi-finder.js      DOI extraction from the page
 lib/doi.js                 DOI regex, cleanDOI, extraction from URL/text
 lib/scihub.js              mirror request and PDF link parsing
 lib/settings.js            settings (storage.sync), mirror list
-options/                   settings page
+popup/                     toolbar popup: open PDF + settings (also the options page)
 _locales/{en,ru}/          localisation
 icons/                     icons
 ```

@@ -2,11 +2,18 @@
 <html>
 <head>
   <meta charset="utf-8">
-  <title data-i18n="optionsTitle">Sci-Hub PDF Opener</title>
-  <link rel="stylesheet" href="options.css">
+  <title data-i18n="extName">Sci-Hub PDF Opener</title>
+  <link rel="stylesheet" href="popup.css">
 </head>
 <body>
   <main>
+    <section class="open-section">
+      <div class="row">
+        <input type="text" id="doi" spellcheck="false" autocomplete="off">
+        <button id="open" class="primary" data-i18n="popupOpen">Open PDF</button>
+      </div>
+    </section>
+
     <section>
       <h2 data-i18n="optMirrorHeading">Mirror</h2>
       <div id="mirror-list" class="mirror-list"></div>
@@ -20,16 +27,15 @@
         <button id="check-mirrors" data-i18n="optCheckMirrors">Check availability</button>
         <span id="check-note" class="note"></span>
       </div>
-    </section>
-
-    <section>
-      <h2 data-i18n="optMirrorListHeading">Mirror list</h2>
-      <p class="note" data-i18n="optMirrorListHint">One domain per line.</p>
-      <textarea id="mirrors-text" rows="8" spellcheck="false"></textarea>
-      <div class="actions">
-        <button id="save-mirrors" data-i18n="optSaveList">Save list</button>
-        <button id="reset-mirrors" data-i18n="optResetList">Reset to defaults</button>
-      </div>
+      <details>
+        <summary data-i18n="popupEditMirrors">Edit mirror list</summary>
+        <p class="note" data-i18n="optMirrorListHint">One domain per line.</p>
+        <textarea id="mirrors-text" rows="6" spellcheck="false"></textarea>
+        <div class="actions">
+          <button id="save-mirrors" data-i18n="optSaveList">Save list</button>
+          <button id="reset-mirrors" data-i18n="optResetList">Reset to defaults</button>
+        </div>
+      </details>
     </section>
 
     <section>
@@ -49,14 +55,6 @@
         <span data-i18n="optTimeout">Request timeout, seconds</span>
         <input type="number" id="timeout" min="3" max="120" step="1">
       </label>
-    </section>
-
-    <section>
-      <h2 data-i18n="optTestHeading">Test</h2>
-      <div class="row">
-        <input type="text" id="test-doi" placeholder="10.1016/j.cell.2015.02.028" spellcheck="false">
-        <button id="test-open" data-i18n="optTestOpen">Open in Sci-Hub</button>
-      </div>
       <p class="note" data-i18n="optShortcutHint">Keyboard shortcut can be changed in Add-ons Manager → gear → Manage Extension Shortcuts.</p>
     </section>
 
@@ -64,6 +62,6 @@
   </main>
   <script src="../lib/doi.js"></script>
   <script src="../lib/settings.js"></script>
-  <script src="options.js"></script>
+  <script src="popup.js"></script>
 </body>
 </html>

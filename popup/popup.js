@@ -1,3 +1,7 @@
+/*
+ * Toolbar popup: opens the PDF for the DOI of the current tab (or a typed
+ * DOI) and holds all settings. Also used as the options page.
+ */
 (function () {
   "use strict";
 
@@ -27,6 +31,39 @@
     await S.set(patch);
     flashSaved();
   }
+
+  /* ---------- open PDF for current tab / typed DOI ---------- */
+
+  async function loadTabDoi() {
+    const input = $("doi");
+    input.placeholder = i18n("popupNoDoi");
+    try {
+      const doi = await browser.runtime.sendMessage({ type: "getTabDoi" });
+      if (doi) {
+        input.value = doi;
+        $("open").disabled = false;
+        return;
+      }
+    } catch (e) {
+      // background not reachable; leave the field empty
+    }
+    $("open").disabled = false;
+  }
+
+  async function openPdf() {
+    const doi = D.extractDoi($("doi").value);
+    if (!doi) {
+      $("doi").focus();
+      return;
+    }
+    await browser.runtime.sendMessage({ type: "openDoi", doi });
+    window.close();
+  }
+
+  $("open").addEventListener("click", () => openPdf().catch(console.error));
+  $("doi").addEventListener("keydown", (e) => {
+    if (e.key === "Enter") openPdf().catch(console.error);
+  });
 
   /* ---------- mirror radios ---------- */
 
@@ -80,25 +117,22 @@
 
   /* ---------- mirror list editing ---------- */
 
-  $("save-mirrors").addEventListener("click", async () => {
-    const lines = $("mirrors-text").value.split(/\r?\n/);
-    const mirrors = S.sanitizeMirrorList(lines);
+  async function saveMirrorList(mirrors) {
     const settings = await S.get();
     const patch = { mirrors };
     if (settings.mirror !== S.CUSTOM && !mirrors.includes(settings.mirror)) {
       patch.mirror = mirrors[0];
     }
     await save(patch);
+  }
+
+  $("save-mirrors").addEventListener("click", () => {
+    const lines = $("mirrors-text").value.split(/\r?\n/);
+    saveMirrorList(S.sanitizeMirrorList(lines)).catch(console.error);
   });
 
-  $("reset-mirrors").addEventListener("click", async () => {
-    const mirrors = S.DEFAULT_MIRRORS.slice();
-    const settings = await S.get();
-    const patch = { mirrors };
-    if (settings.mirror !== S.CUSTOM && !mirrors.includes(settings.mirror)) {
-      patch.mirror = mirrors[0];
-    }
-    await save(patch);
+  $("reset-mirrors").addEventListener("click", () => {
+    saveMirrorList(S.DEFAULT_MIRRORS.slice()).catch(console.error);
   });
 
   /* ---------- availability check ---------- */
@@ -167,21 +201,6 @@
     save({ timeoutMs: seconds * 1000 });
   });
 
-  /* ---------- test ---------- */
-
-  async function testOpen() {
-    const doi = D.extractDoi($("test-doi").value);
-    if (!doi) {
-      $("test-doi").focus();
-      return;
-    }
-    await browser.runtime.sendMessage({ type: "openDoi", doi });
-  }
-  $("test-open").addEventListener("click", () => testOpen().catch(console.error));
-  $("test-doi").addEventListener("keydown", (e) => {
-    if (e.key === "Enter") testOpen().catch(console.error);
-  });
-
   /* ---------- init ---------- */
 
   async function load() {
@@ -199,5 +218,7 @@
     }
   });
 
+  $("open").disabled = true;
   load().catch(console.error);
+  loadTabDoi().catch(console.error);
 })();

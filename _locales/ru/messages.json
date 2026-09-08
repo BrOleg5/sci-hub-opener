@@ -8,7 +8,9 @@
   "menuOpenSelection": { "message": "Открыть выделенный DOI в Sci-Hub" },
   "menuOpenPage": { "message": "Открыть эту статью в Sci-Hub" },
 
-  "optionsTitle": { "message": "Sci-Hub PDF Opener — настройки" },
+  "popupOpen": { "message": "Открыть PDF" },
+  "popupNoDoi": { "message": "На странице нет DOI — введите вручную" },
+  "popupEditMirrors": { "message": "Редактировать список зеркал" },
   "optMirrorHeading": { "message": "Зеркало" },
   "optCustomMirror": { "message": "Своё:" },
   "optCheckMirrors": { "message": "Проверить доступность" },
@@ -25,8 +27,6 @@
   "optOpenInCurrentTab": { "message": "текущей вкладке" },
   "optShowBadge": { "message": "Показывать бейдж «DOI» на иконке, когда DOI найден" },
   "optTimeout": { "message": "Таймаут запроса, секунд" },
-  "optTestHeading": { "message": "Проверка" },
-  "optTestOpen": { "message": "Открыть в Sci-Hub" },
   "optShortcutHint": { "message": "Горячая клавиша по умолчанию: Alt+Shift+S. Изменить: Управление дополнениями → шестерёнка → Управление горячими клавишами расширений." },
   "optSaved": { "message": "Сохранено" }
 }

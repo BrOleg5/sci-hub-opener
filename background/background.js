@@ -33,7 +33,7 @@
     try {
       await browser.browserAction.setBadgeText({ text: "DOI", tabId });
       await browser.browserAction.setBadgeBackgroundColor({ color: BADGE_COLOR, tabId });
-      await browser.browserAction.setTitle({ title: i18n("actionTitle") + "\n" + doi, tabId });
+      await browser.browserAction.setTitle({ title: i18n("extName") + "\n" + doi, tabId });
     } catch (e) {
       // Tab may have been closed meanwhile.
     }
@@ -273,10 +273,8 @@
 
   /* ---------- events ---------- */
 
-  browser.browserAction.onClicked.addListener((tab) => {
-    openForTab(tab).catch(console.error);
-  });
-
+  // The toolbar button opens the popup (popup/popup.html); the address-bar
+  // button, the keyboard command and the context menu open the PDF directly.
   browser.pageAction.onClicked.addListener((tab) => {
     openForTab(tab).catch(console.error);
   });
@@ -300,6 +298,9 @@
     }
     if (msg.type === "openDoi" && msg.doi) {
       return activeTab().then((tab) => openDoi(msg.doi, tab));
+    }
+    if (msg.type === "getTabDoi") {
+      return activeTab().then(doiForTab);
     }
     return undefined;
   });

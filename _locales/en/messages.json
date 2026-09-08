@@ -8,7 +8,9 @@
   "menuOpenSelection": { "message": "Open selected DOI in Sci-Hub" },
   "menuOpenPage": { "message": "Open this article in Sci-Hub" },
 
-  "optionsTitle": { "message": "Sci-Hub PDF Opener — settings" },
+  "popupOpen": { "message": "Open PDF" },
+  "popupNoDoi": { "message": "No DOI on this page — type one" },
+  "popupEditMirrors": { "message": "Edit mirror list" },
   "optMirrorHeading": { "message": "Mirror" },
   "optCustomMirror": { "message": "Custom:" },
   "optCheckMirrors": { "message": "Check availability" },
@@ -25,8 +27,6 @@
   "optOpenInCurrentTab": { "message": "current tab" },
   "optShowBadge": { "message": "Show a \"DOI\" badge on the toolbar icon when a DOI is found" },
   "optTimeout": { "message": "Request timeout, seconds" },
-  "optTestHeading": { "message": "Test" },
-  "optTestOpen": { "message": "Open in Sci-Hub" },
   "optShortcutHint": { "message": "Default shortcut: Alt+Shift+S. Change it in Add-ons Manager → gear icon → Manage Extension Shortcuts." },
   "optSaved": { "message": "Saved" }
 }

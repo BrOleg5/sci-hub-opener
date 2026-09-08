@@ -53,7 +53,8 @@
       "16": "icons/icon-16.png",
       "32": "icons/icon-32.png"
     },
-    "default_title": "__MSG_actionTitle__"
+    "default_title": "__MSG_extName__",
+    "default_popup": "popup/popup.html"
   },
 
   "page_action": {
@@ -66,7 +67,7 @@
   },
 
   "options_ui": {
-    "page": "options/options.html",
+    "page": "popup/popup.html",
     "open_in_tab": false
   },
 
