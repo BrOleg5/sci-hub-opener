@@ -74,7 +74,7 @@
   "commands": {
     "open-in-scihub": {
       "suggested_key": {
-        "default": "Alt+Shift+S"
+        "default": "Ctrl+Shift+L"
       },
       "description": "__MSG_commandOpen__"
     }

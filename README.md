@@ -14,7 +14,7 @@ JSON-LD, canonical link/URL, links to `doi.org`, and as a last resort the page t
   an "Open PDF" button and all settings. When a DOI is found, the icon shows a "DOI"
   badge (the DOI itself is in the tooltip). The same page serves as the options page
   in the Add-ons Manager.
-- **Keyboard shortcut** `Alt+Shift+S` (change it under "Manage Extension Shortcuts").
+- **Keyboard shortcut** `Ctrl+Shift+L` (change it under "Manage Extension Shortcuts").
 - **Context menu** (items appear only where a DOI is present):
   - on a DOI link (`doi.org/…`, `…/doi/10.…` or a DOI in the link text) — "Open DOI link in Sci-Hub";
   - on selected text containing a DOI — "Open selected DOI in Sci-Hub";
