@@ -1,0 +1,32 @@
+{
+  "extName": { "message": "Sci-Hub PDF Opener" },
+  "extDescription": { "message": "Opens the PDF of the current article directly from Sci-Hub storage using the page's DOI." },
+  "actionTitle": { "message": "Open this article in Sci-Hub (PDF)" },
+  "commandOpen": { "message": "Open current article in Sci-Hub" },
+
+  "menuOpenLink": { "message": "Open DOI link in Sci-Hub" },
+  "menuOpenSelection": { "message": "Open selected DOI in Sci-Hub" },
+  "menuOpenPage": { "message": "Open this article in Sci-Hub" },
+
+  "optionsTitle": { "message": "Sci-Hub PDF Opener — settings" },
+  "optMirrorHeading": { "message": "Mirror" },
+  "optCustomMirror": { "message": "Custom:" },
+  "optCheckMirrors": { "message": "Check availability" },
+  "optChecking": { "message": "Checking…" },
+  "optCheckDone": { "message": "Done. A reachable domain does not guarantee that PDFs are served." },
+  "optTimeoutShort": { "message": "timeout" },
+  "optMirrorListHeading": { "message": "Mirror list" },
+  "optMirrorListHint": { "message": "One domain per line. Used for the list above." },
+  "optSaveList": { "message": "Save list" },
+  "optResetList": { "message": "Reset to defaults" },
+  "optBehaviorHeading": { "message": "Behaviour" },
+  "optOpenIn": { "message": "Open PDF in" },
+  "optOpenInNewTab": { "message": "new tab" },
+  "optOpenInCurrentTab": { "message": "current tab" },
+  "optShowBadge": { "message": "Show a \"DOI\" badge on the toolbar icon when a DOI is found" },
+  "optTimeout": { "message": "Request timeout, seconds" },
+  "optTestHeading": { "message": "Test" },
+  "optTestOpen": { "message": "Open in Sci-Hub" },
+  "optShortcutHint": { "message": "Default shortcut: Alt+Shift+S. Change it in Add-ons Manager → gear icon → Manage Extension Shortcuts." },
+  "optSaved": { "message": "Saved" }
+}

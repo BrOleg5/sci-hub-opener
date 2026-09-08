@@ -1,0 +1,32 @@
+{
+  "extName": { "message": "Sci-Hub PDF Opener" },
+  "extDescription": { "message": "Открывает PDF текущей статьи напрямую из хранилища Sci-Hub по DOI страницы." },
+  "actionTitle": { "message": "Открыть эту статью в Sci-Hub (PDF)" },
+  "commandOpen": { "message": "Открыть текущую статью в Sci-Hub" },
+
+  "menuOpenLink": { "message": "Открыть DOI-ссылку в Sci-Hub" },
+  "menuOpenSelection": { "message": "Открыть выделенный DOI в Sci-Hub" },
+  "menuOpenPage": { "message": "Открыть эту статью в Sci-Hub" },
+
+  "optionsTitle": { "message": "Sci-Hub PDF Opener — настройки" },
+  "optMirrorHeading": { "message": "Зеркало" },
+  "optCustomMirror": { "message": "Своё:" },
+  "optCheckMirrors": { "message": "Проверить доступность" },
+  "optChecking": { "message": "Проверяю…" },
+  "optCheckDone": { "message": "Готово. Доступность домена не гарантирует, что PDF будет отдан." },
+  "optTimeoutShort": { "message": "таймаут" },
+  "optMirrorListHeading": { "message": "Список зеркал" },
+  "optMirrorListHint": { "message": "По одному домену в строке. Используется для списка выше." },
+  "optSaveList": { "message": "Сохранить список" },
+  "optResetList": { "message": "Сбросить к умолчанию" },
+  "optBehaviorHeading": { "message": "Поведение" },
+  "optOpenIn": { "message": "Открывать PDF в" },
+  "optOpenInNewTab": { "message": "новой вкладке" },
+  "optOpenInCurrentTab": { "message": "текущей вкладке" },
+  "optShowBadge": { "message": "Показывать бейдж «DOI» на иконке, когда DOI найден" },
+  "optTimeout": { "message": "Таймаут запроса, секунд" },
+  "optTestHeading": { "message": "Проверка" },
+  "optTestOpen": { "message": "Открыть в Sci-Hub" },
+  "optShortcutHint": { "message": "Горячая клавиша по умолчанию: Alt+Shift+S. Изменить: Управление дополнениями → шестерёнка → Управление горячими клавишами расширений." },
+  "optSaved": { "message": "Сохранено" }
+}
