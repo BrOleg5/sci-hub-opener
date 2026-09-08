@@ -1,93 +1,94 @@
 # Sci-Hub PDF Opener (Firefox)
 
-Расширение открывает PDF научной статьи **напрямую из хранилища Sci-Hub**
-(`https://<зеркало>/storage/…/….pdf` или `/downloads/…/….pdf`), без нижней панели
-Sci-Hub. DOI извлекается с любой страницы так же, как это делает Zotero Connector:
-meta-теги (`citation_doi`, `dc.identifier`, `prism.doi` …), JSON-LD, canonical/URL,
-ссылки на `doi.org`, а в крайнем случае текст страницы.
+This extension opens the PDF of a scientific article **directly from Sci-Hub
+storage** (`https://<mirror>/storage/…/….pdf` or `/downloads/…/….pdf`), without the
+Sci-Hub bottom panel. The DOI is extracted from any page the same way the Zotero
+Connector does it: meta tags (`citation_doi`, `dc.identifier`, `prism.doi`, …),
+JSON-LD, canonical link/URL, links to `doi.org`, and as a last resort the page text.
 
-## Возможности
+## Features
 
-- **Кнопка в адресной строке** — появляется только на страницах, где найден DOI
-  (статьи в журналах, базах данных, трудах конференций и т.п.), и открывает PDF.
-- **Кнопка на панели инструментов** — один клик открывает PDF статьи с текущей
-  страницы. Когда DOI найден, на иконке появляется бейдж «DOI» (DOI виден в подсказке).
-- **Горячая клавиша** `Alt+Shift+S` (меняется в «Управление горячими клавишами расширений»).
-- **Контекстное меню** (пункты появляются только там, где есть DOI):
-  - на DOI-ссылке (`doi.org/…`, `…/doi/10.…` или DOI в тексте ссылки) — «Открыть DOI-ссылку в Sci-Hub»;
-  - на выделенном тексте с DOI — «Открыть выделенный DOI в Sci-Hub»;
-  - на странице с найденным DOI / на кнопке расширения — «Открыть эту статью в Sci-Hub».
-- **Выбор зеркала** из редактируемого списка или своё зеркало; проверка доступности.
-- **Fallback**: если Sci-Hub не отдал PDF (статьи нет, капча, зеркало недоступно),
-  открывается обычная страница `https://<зеркало>/<doi>`.
-- Открытие в новой вкладке (рядом с текущей) или в текущей — по настройке.
-- Интерфейс: английский и русский.
+- **Address-bar button** — appears only on pages where a DOI was found (journal
+  articles, databases, conference proceedings and the like) and opens the PDF.
+- **Toolbar button** — one click opens the PDF of the article on the current page.
+  When a DOI is found, the icon shows a "DOI" badge (the DOI itself is in the tooltip).
+- **Keyboard shortcut** `Alt+Shift+S` (change it under "Manage Extension Shortcuts").
+- **Context menu** (items appear only where a DOI is present):
+  - on a DOI link (`doi.org/…`, `…/doi/10.…` or a DOI in the link text) — "Open DOI link in Sci-Hub";
+  - on selected text containing a DOI — "Open selected DOI in Sci-Hub";
+  - on a page with a detected DOI / on the extension button — "Open this article in Sci-Hub".
+- **Mirror selection** from an editable list or a custom mirror; availability check.
+- **Fallback**: if Sci-Hub did not return a PDF (article missing, robot check, mirror
+  down), the plain page `https://<mirror>/<doi>` is opened instead.
+- Opens in a new tab (next to the current one) or in the current tab — configurable.
+- UI languages: English and Russian.
 
-## Установка
+## Installation
 
-### Временно (для разработки)
+### Temporarily (for development)
 
-1. Откройте `about:debugging#/runtime/this-firefox`.
-2. «Загрузить временное дополнение…» → выберите `manifest.json` из этой папки.
-3. Кнопка появится на панели; расширение живёт до перезапуска Firefox.
+1. Open `about:debugging#/runtime/this-firefox`.
+2. "Load Temporary Add-on…" → pick `manifest.json` from this folder.
+3. The button appears on the toolbar; the extension lives until Firefox restarts.
 
-### Постоянно
+### Permanently
 
-1. Установите [web-ext](https://extensionworkshop.com/documentation/develop/getting-started-with-web-ext/):
+1. Install [web-ext](https://extensionworkshop.com/documentation/develop/getting-started-with-web-ext/):
    `npm install --global web-ext`.
-2. Соберите пакет: `web-ext build` (появится `web-ext-artifacts/*.zip`).
-3. Подпишите на AMO (`web-ext sign --channel unlisted --api-key … --api-secret …`)
-   или установите неподписанный `.xpi` в Firefox Developer Edition / Nightly
-   с `xpinstall.signatures.required = false`.
+2. Build the package: `web-ext build` (produces `web-ext-artifacts/*.zip`).
+3. Sign it on AMO (`web-ext sign --channel unlisted --api-key … --api-secret …`)
+   or install the unsigned `.xpi` in Firefox Developer Edition / Nightly with
+   `xpinstall.signatures.required = false`.
 
-## Как это работает
+## How it works
 
-1. Контент-скрипт `content/doi-finder.js` находит DOI страницы (приоритет:
-   metadata → JSON-LD → canonical/URL → ссылки → текст; при нескольких кандидатах
-   из ссылок/текста выбирается самый частый).
-2. Фоновая страница `background/background.js` запрашивает
-   `https://<зеркало>/<doi>` (с cookie пользователя), а `lib/scihub.js` ищет на
-   странице `meta[name=citation_pdf_url]`, `object[type=application/pdf]`, `#pdf`
-   (`embed`/`iframe`), `onclick="location.href='…pdf'"` или любой URL вида
-   `/storage/…pdf` / `/downloads/…pdf`, нормализует его (убирает `#…` и `?download=true`)
-   и открывает во вкладке.
-3. Если зеркало сразу вернуло `application/pdf`, открывается конечный URL ответа.
+1. The content script `content/doi-finder.js` finds the page DOI (priority:
+   metadata → JSON-LD → canonical/URL → links → text; when several candidates come
+   from links/text, the most frequent one wins).
+2. The background page `background/background.js` requests
+   `https://<mirror>/<doi>` (with the user's cookies), and `lib/scihub.js` looks for
+   `meta[name=citation_pdf_url]`, `object[type=application/pdf]`, `#pdf`
+   (`embed`/`iframe`), `onclick="location.href='…pdf'"` or any URL of the form
+   `/storage/…pdf` / `/downloads/…pdf`, normalises it (drops `#…` and
+   `?download=true`) and opens it in a tab.
+3. If the mirror responds with `application/pdf` right away, the final response URL
+   is opened.
 
-## Проверка «Вы робот?»
+## "Are you a robot?" check
 
-Sci-Hub показывает новой сессии страницу «проверка на робота» (ALTCHA) и
-запоминает результат в cookie. Первый запуск на новом зеркале обычно выглядит так:
+Sci-Hub shows new sessions a robot-check page (ALTCHA) and remembers the result in
+a cookie. The first run on a new mirror usually goes like this:
 
-1. Расширение не находит PDF и открывает обычную страницу Sci-Hub.
-2. Вы нажимаете «Нет» на вопрос «Вы робот?». Страница перезагружается уже со статьёй.
-3. Расширение замечает встроенный PDF в этой вкладке и само переходит на прямой
-   URL PDF из storage.
+1. The extension finds no PDF and opens the plain Sci-Hub page.
+2. You click "No" on the "Are you a robot?" question. The page reloads with the article.
+3. The extension notices the embedded PDF in that tab and navigates to the direct
+   storage PDF URL by itself.
 
-Дальнейшие клики открывают PDF сразу, пока cookie действует.
+Subsequent clicks open the PDF immediately for as long as the cookie is valid.
 
-## Ограничения
+## Limitations
 
-- Зеркала меняются и не все доступны из каждой сети; список по умолчанию можно
-  править в настройках, доступность — проверить кнопкой.
-- Статьи новее 2021–2022 гг. в Sci-Hub, как правило, отсутствуют.
+- Mirrors change and not all of them are reachable from every network; the default
+  list can be edited in the settings, and availability can be checked with a button.
+- Articles newer than 2021–2022 are usually missing from Sci-Hub.
 
-## Тесты
+## Tests
 
 ```
 node test/doi.test.js
 npx web-ext lint --ignore-files "test/**"
 ```
 
-## Структура
+## Layout
 
 ```
 manifest.json
-background/background.js   меню, кнопка, команды, открытие вкладок, бейдж
-content/doi-finder.js      извлечение DOI со страницы
-lib/doi.js                 регулярка DOI, cleanDOI, извлечение из URL/текста
-lib/scihub.js              запрос к зеркалу и разбор ссылки на PDF
-lib/settings.js            настройки (storage.sync), список зеркал
-options/                   страница настроек
-_locales/{en,ru}/          локализация
-icons/                     иконки
+background/background.js   menus, buttons, commands, tab handling, badge
+content/doi-finder.js      DOI extraction from the page
+lib/doi.js                 DOI regex, cleanDOI, extraction from URL/text
+lib/scihub.js              mirror request and PDF link parsing
+lib/settings.js            settings (storage.sync), mirror list
+options/                   settings page
+_locales/{en,ru}/          localisation
+icons/                     icons
 ```
