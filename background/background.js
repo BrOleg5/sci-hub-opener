@@ -48,6 +48,23 @@
     }
   }
 
+  /* ---------- page action (address-bar button) ---------- */
+
+  // Shown only on pages where a DOI was found, i.e. article pages of
+  // journals, databases, conference proceedings and the like.
+  async function updatePageAction(tabId, doi) {
+    try {
+      if (doi) {
+        await browser.pageAction.setTitle({ title: i18n("actionTitle") + "\n" + doi, tabId });
+        await browser.pageAction.show(tabId);
+      } else {
+        await browser.pageAction.hide(tabId);
+      }
+    } catch (e) {
+      // Tab may have been closed meanwhile.
+    }
+  }
+
   async function setBusy(tabId, busy) {
     if (tabId === undefined) return;
     try {
@@ -260,6 +277,10 @@
     openForTab(tab).catch(console.error);
   });
 
+  browser.pageAction.onClicked.addListener((tab) => {
+    openForTab(tab).catch(console.error);
+  });
+
   browser.commands.onCommand.addListener(async (command) => {
     if (command === "open-in-scihub") {
       const tab = await activeTab();
@@ -272,7 +293,7 @@
     if (msg.type === "doiFound" && sender.tab) {
       if (msg.doi) knownDois.set(sender.tab.id, msg.doi);
       else knownDois.delete(sender.tab.id);
-      return setBadge(sender.tab.id, msg.doi);
+      return Promise.all([setBadge(sender.tab.id, msg.doi), updatePageAction(sender.tab.id, msg.doi)]);
     }
     if (msg.type === "scihubPdf" && sender.tab && msg.url) {
       return redirectFallbackTab(sender.tab.id, sender.url || sender.tab.url || "", msg.url);
@@ -288,6 +309,7 @@
       if (changeInfo.status === "loading") {
         knownDois.delete(tabId);
         clearBadge(tabId);
+        updatePageAction(tabId, null);
       }
     },
     { properties: ["status"] }

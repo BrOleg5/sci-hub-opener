@@ -56,6 +56,15 @@
     "default_title": "__MSG_actionTitle__"
   },
 
+  "page_action": {
+    "default_icon": {
+      "16": "icons/icon-16.png",
+      "32": "icons/icon-32.png"
+    },
+    "default_title": "__MSG_actionTitle__",
+    "pinned": true
+  },
+
   "options_ui": {
     "page": "options/options.html",
     "open_in_tab": false
