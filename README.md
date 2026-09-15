@@ -81,6 +81,7 @@ DOI on any article page and to load pages from the Sci-Hub mirror you chose.
 
 ```
 manifest.json
+package.json               npm scripts: build, lint, start, test
 background/background.js   menus, buttons, shortcut, tab handling, badge, selection window
 content/doi-finder.js      DOI and title extraction from the page
 lib/doi.js                 DOI regex, cleanDOI, extraction from URL/text, list-page rules
@@ -119,7 +120,23 @@ test/                      unit tests and saved Sci-Hub pages
 Several articles picked in the selection window are resolved at most three at a
 time and opened next to the list page in the picked order.
 
+### Setup
+
+Node.js 22 or newer is required. Install the pinned dependencies (`web-ext`):
+
+```
+npm ci
+```
+
 ### Load for development
+
+Either run Firefox with the add-on loaded:
+
+```
+npm start
+```
+
+or load it by hand:
 
 1. Open `about:debugging#/runtime/this-firefox`.
 2. Click **Load Temporary Add-on…** and pick `manifest.json` from this folder.
@@ -128,25 +145,24 @@ time and opened next to the list page in the picked order.
 
 ### Tests
 
-Unit tests need only Node.js:
-
 ```
-node test/doi.test.js
+npm test
 ```
 
-They cover DOI parsing, list-page rules, title cleanup and PDF link extraction,
-including pages saved from sci-hub.ru in `test/fixtures/`.
+The tests cover DOI parsing, list-page rules, title cleanup and PDF link
+extraction, including pages saved from sci-hub.ru in `test/fixtures/`.
 
 ### Lint
 
 ```
-npx web-ext lint --ignore-files "test/**"
+npm run lint
 ```
 
 ### Build
 
 ```
-npx web-ext build --ignore-files "test/**"
+npm run build
 ```
 
-The package is written to `web-ext-artifacts/`.
+The package is written to `web-ext-artifacts/sci-hub-opener.xpi`. Tests, the
+README and npm files are left out of it.

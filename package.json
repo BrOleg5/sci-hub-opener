@@ -1,0 +1,18 @@
+{
+  "name": "sci-hub-opener",
+  "private": true,
+  "description": "Firefox extension that opens the PDF of a scientific article in Sci-Hub.",
+  "license": "MIT",
+  "scripts": {
+    "build": "web-ext build --overwrite-dest --filename sci-hub-opener.xpi --ignore-files README.md package.json package-lock.json test",
+    "lint": "web-ext lint --ignore-files README.md package.json package-lock.json test",
+    "start": "web-ext run --ignore-files README.md package.json package-lock.json test",
+    "test": "node test/doi.test.js"
+  },
+  "devDependencies": {
+    "web-ext": "10.6.0"
+  },
+  "engines": {
+    "node": ">=22"
+  }
+}
