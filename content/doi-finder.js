@@ -29,6 +29,26 @@
   const SKIP_TAGS = new Set(["SCRIPT", "STYLE", "NOSCRIPT", "TEXTAREA", "TEMPLATE", "SVG"]);
   const MAX_TEXT_NODES = 50000;
 
+  // Titles for the selection window on list pages.
+  const TITLE_SELECTORS = [
+    "h1",
+    "h2",
+    "h3",
+    "h4",
+    "h5",
+    "h6",
+    "[itemprop='name']",
+    "[itemprop='headline']",
+    "[class*='title' i]",
+    "[class*='heading' i]"
+  ].join(", ");
+  const MAX_CONTAINER_DEPTH = 6;
+  const MAX_CONTAINER_TEXT = 4000;
+  const MIN_LINK_TITLE = 20;
+  const MIN_TITLE = 8;
+  const MAX_TITLE = 300;
+  const MAX_PLAIN_ITEM_TEXT = 600;
+
   function metaDois() {
     const out = [];
     for (const name of META_NAMES) {
@@ -90,15 +110,23 @@
     return out;
   }
 
-  function linkDois(out) {
+  /** Adds `doi` to `out` and remembers the first element that mentions it. */
+  function remember(out, anchors, doi, el) {
+    if (!doi) return;
+    D.pushUnique(out, doi);
+    const key = doi.toLowerCase();
+    if (el && !anchors.has(key)) anchors.set(key, el);
+  }
+
+  function linkDois(out, anchors) {
     for (const a of document.querySelectorAll("a[href]")) {
       const href = a.getAttribute("href") || "";
       if (href.indexOf("10.") === -1 && !/doi/i.test(href)) continue;
-      D.pushUnique(out, D.extractDoiFromUrl(a.href));
+      remember(out, anchors, D.extractDoiFromUrl(a.href), a);
     }
   }
 
-  function textDois(out) {
+  function textDois(out, anchors) {
     const rootNode = document.body || document.documentElement;
     if (!rootNode) return;
     const walker = document.createTreeWalker(rootNode, NodeFilter.SHOW_TEXT, {
@@ -112,32 +140,110 @@
     let visited = 0;
     while ((node = walker.nextNode()) && visited++ < MAX_TEXT_NODES) {
       for (const doi of D.extractAllDois(node.nodeValue)) {
-        D.pushUnique(out, doi);
+        remember(out, anchors, doi, node.parentElement);
       }
     }
   }
 
+  /* ---------- titles (list pages) ---------- */
+
+  function distinctDoiCount(el) {
+    const found = [];
+    for (const doi of D.extractAllDois(el.textContent || "")) {
+      D.pushUnique(found, doi);
+      if (found.length > 1) return found.length;
+    }
+    for (const a of el.querySelectorAll("a[href]")) {
+      if ((a.getAttribute("href") || "").indexOf("10.") === -1) continue;
+      D.pushUnique(found, D.extractDoiFromUrl(a.href));
+      if (found.length > 1) return found.length;
+    }
+    return found.length;
+  }
+
+  /** The list item around `anchor`: the largest ancestor that mentions only this DOI. */
+  function containerFor(anchor) {
+    let el = anchor;
+    for (let depth = 0; depth < MAX_CONTAINER_DEPTH; depth++) {
+      const parent = el.parentElement;
+      if (!parent || parent === document.body || parent === document.documentElement) break;
+      if ((parent.textContent || "").length > MAX_CONTAINER_TEXT) break;
+      if (distinctDoiCount(parent) > 1) break;
+      el = parent;
+    }
+    return el;
+  }
+
+  function truncate(title) {
+    if (title.length <= MAX_TITLE) return title;
+    return title.slice(0, MAX_TITLE).replace(/\s+\S*$/, "") + "…";
+  }
+
+  /** Best-effort article title for a DOI found at `anchor`; "" if none. */
+  function titleFor(anchor, doi) {
+    if (!anchor) return "";
+    // 1. The DOI link's own text when it reads like a title
+    //    (e.g. <a href="/doi/10.…">Article title</a>).
+    if (anchor.matches("a") && !anchor.querySelector(TITLE_SELECTORS)) {
+      const title = D.cleanTitle(anchor.textContent, doi);
+      if (title.length >= MIN_LINK_TITLE && title.length <= MAX_TITLE) return title;
+    }
+    const container = containerFor(anchor);
+    // 2. A heading or title-like element in the list item.
+    for (const el of container.querySelectorAll(TITLE_SELECTORS)) {
+      const title = D.cleanTitle(el.textContent, doi);
+      if (title.length >= MIN_TITLE) return truncate(title);
+    }
+    // 3. Another link in the list item with title-like text.
+    for (const a of container.querySelectorAll("a")) {
+      const title = D.cleanTitle(a.textContent, doi);
+      if (title.length >= MIN_LINK_TITLE && title.length <= MAX_TITLE) return title;
+    }
+    // 4. A short plain-text item, e.g. a reference-list entry: its own text.
+    const text = container.textContent || "";
+    if (text.length <= MAX_PLAIN_ITEM_TEXT) {
+      const title = D.cleanTitle(text, doi);
+      if (title.length >= MIN_TITLE) return truncate(title);
+    }
+    return "";
+  }
+
   /**
-   * Returns { primary, all, source }. `primary` is null on list pages
-   * (several DOIs in links/text and none in metadata or the URL).
+   * Returns { primary, all, source } and, with options.withTitles,
+   * items: [{ doi, title }]. `primary` is null on list pages (several DOIs in
+   * links/text and none in metadata or the URL).
    */
-  function findDois() {
+  function findDois(options) {
     const metadata = [];
     for (const doi of metaDois().concat(jsonLdDois())) D.pushUnique(metadata, doi);
     const fromUrl = urlDois();
     const onPage = [];
-    linkDois(onPage);
-    textDois(onPage);
+    const anchors = new Map(); // lower-cased DOI -> first element mentioning it
+    linkDois(onPage, anchors);
+    textDois(onPage, anchors);
 
     const { primary, source } = D.choosePrimaryDoi(metadata, fromUrl, onPage);
     const all = [];
     for (const doi of [].concat(metadata, fromUrl, onPage)) D.pushUnique(all, doi);
-    return { primary, all, source };
+
+    const result = { primary, all, source };
+    if (options && options.withTitles) {
+      // Links are scanned before text, so restore page order for the list.
+      const anchorOf = (doi) => anchors.get(doi.toLowerCase());
+      const ordered = all.slice().sort((a, b) => {
+        const ea = anchorOf(a);
+        const eb = anchorOf(b);
+        if (!ea || !eb) return (ea ? 1 : 0) - (eb ? 1 : 0);
+        return ea.compareDocumentPosition(eb) & Node.DOCUMENT_POSITION_FOLLOWING ? -1 : 1;
+      });
+      result.items = ordered.map((doi) => ({ doi, title: titleFor(anchorOf(doi), doi) }));
+    }
+    return result;
   }
 
   browser.runtime.onMessage.addListener((msg) => {
     if (msg && msg.type === "getDoi") {
-      return Promise.resolve(findDois());
+      return Promise.resolve(findDois({ withTitles: !!msg.withTitles }));
     }
     return undefined;
   });

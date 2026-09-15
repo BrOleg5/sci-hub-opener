@@ -71,6 +71,12 @@ check("single page doi is primary", D.choosePrimaryDoi([], [], ["10.1000/only"])
 check("list page has no primary", D.choosePrimaryDoi([], [], ["10.1000/a", "10.1000/b"]), { primary: null, source: "multiple" });
 check("no doi at all", D.choosePrimaryDoi([], [], []), { primary: null, source: null });
 
+// cleanTitle
+check("title whitespace", D.cleanTitle("  Engineering   transition\n metal ", "10.1000/x"), "Engineering transition metal");
+check("title strips doi: suffix", D.cleanTitle("Some title. doi: 10.1016/j.cell.2015.02.028.", "10.1016/j.cell.2015.02.028"), "Some title");
+check("title strips doi.org url, any case", D.cleanTitle("https://doi.org/10.1016/J.CELL.2015.02.028", "10.1016/j.cell.2015.02.028"), "");
+check("title keeps question mark", D.cleanTitle("Is it true?", "10.1000/x"), "Is it true?");
+
 // Sci-Hub URL helpers
 check("article url", H.buildArticleUrl("https://sci-hub.se", "10.1016/j.cell.2015.02.028"), "https://sci-hub.se/10.1016/j.cell.2015.02.028");
 check("article url with <>", H.buildArticleUrl("https://sci-hub.se/", "10.1002/(SICI)1097-0258(19980415)17:7<857::AID-SIM777>3.0.CO;2-E"), "https://sci-hub.se/10.1002/(SICI)1097-0258(19980415)17:7%3C857::AID-SIM777%3E3.0.CO;2-E");
