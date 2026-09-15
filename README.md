@@ -1,4 +1,4 @@
-# Sci-Hub PDF Opener (Firefox)
+# Sci-Hub Opener (Firefox)
 
 > [!CAUTION]
 > This project's code is 100% AI-generated.

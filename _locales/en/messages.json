@@ -1,5 +1,5 @@
 {
-  "extName": { "message": "Sci-Hub PDF Opener" },
+  "extName": { "message": "Sci-Hub Opener" },
   "extDescription": { "message": "Opens the PDF of the current article directly from Sci-Hub storage using the page's DOI." },
   "actionTitle": { "message": "Open this article in Sci-Hub (PDF)" },
   "actionTitleList": { "message": "Select articles to open in Sci-Hub ($1 found)" },

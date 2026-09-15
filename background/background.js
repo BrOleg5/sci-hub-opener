@@ -191,7 +191,7 @@
     if (!result.pdfUrl) {
       // No PDF (not in Sci-Hub, robot check, mirror down): open the plain
       // Sci-Hub page so the user sees what happened there.
-      console.info("Sci-Hub PDF Opener: no direct PDF for", doi, result);
+      console.info("Sci-Hub Opener: no direct PDF for", doi, result);
     }
     const tab = await openUrl(result.pdfUrl || result.articleUrl, openerTab, options);
     if (!result.pdfUrl && tab && tab.id !== undefined) rememberFallbackTab(tab.id, result.articleUrl);
@@ -236,7 +236,7 @@
         try {
           result = await results[i];
         } catch (e) {
-          console.error("Sci-Hub PDF Opener:", dois[i], e);
+          console.error("Sci-Hub Opener:", dois[i], e);
           continue;
         }
         const tab = await openResult(dois[i], result, openerTab, { index, active: i === 0 });
@@ -301,7 +301,7 @@
     } else if (all.length > 1) {
       await openSelectWindow(tab);
     } else {
-      console.info("Sci-Hub PDF Opener: no DOI found on", tab && tab.url);
+      console.info("Sci-Hub Opener: no DOI found on", tab && tab.url);
     }
   }
 
@@ -377,7 +377,7 @@
         await openForTab(tab || (await activeTab()));
       }
     } catch (e) {
-      console.error("Sci-Hub PDF Opener:", e);
+      console.error("Sci-Hub Opener:", e);
     }
   });
 

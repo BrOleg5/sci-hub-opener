@@ -1,5 +1,5 @@
 {
-  "extName": { "message": "Sci-Hub PDF Opener" },
+  "extName": { "message": "Sci-Hub Opener" },
   "extDescription": { "message": "Открывает PDF текущей статьи напрямую из хранилища Sci-Hub по DOI страницы." },
   "actionTitle": { "message": "Открыть эту статью в Sci-Hub (PDF)" },
   "actionTitleList": { "message": "Выбрать статьи для открытия в Sci-Hub (найдено: $1)" },
