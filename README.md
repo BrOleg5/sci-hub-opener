@@ -11,13 +11,18 @@ JSON-LD, canonical link/URL, links to `doi.org`, and as a last resort the page t
 
 ## Features
 
-- **Address-bar button** — appears only on pages where a DOI was found (journal
-  articles, databases, conference proceedings and the like) and opens the PDF.
-- **Toolbar button** — opens a popup with the DOI found on the current page (editable),
-  an "Open PDF" button and all settings. When a DOI is found, the icon shows a "DOI"
-  badge (the DOI itself is in the tooltip). The same page serves as the options page
-  in the Add-ons Manager.
-- **Keyboard shortcut** `Ctrl+Shift+L` (change it under "Manage Extension Shortcuts").
+- **Address-bar button** — on article pages (journals, databases, conference
+  proceedings and the like) it opens the PDF. On list pages (search results, tables
+  of contents, book chapters) it shows a folder icon, like the Zotero connector, and
+  opens a window listing the articles found: tick the ones you need and press "Open"
+  to get each PDF in its own tab. Hidden on all other pages.
+- **Toolbar button** — opens a popup with the DOI of the current article (editable),
+  an "Open PDF" button and all settings. On list pages the popup has a
+  "Select articles…" button that opens the same selection window. On article pages
+  the icon shows a "DOI" badge (the DOI itself is in the tooltip). The same page
+  serves as the options page in the Add-ons Manager.
+- **Keyboard shortcut** `Ctrl+Shift+L` — same as the address-bar button (change it
+  under "Manage Extension Shortcuts").
 - **Context menu** (items appear only where a DOI is present):
   - on a DOI link (`doi.org/…`, `…/doi/10.…` or a DOI in the link text) — "Open DOI link in Sci-Hub";
   - on selected text containing a DOI — "Open selected DOI in Sci-Hub";
@@ -50,7 +55,8 @@ JSON-LD, canonical link/URL, links to `doi.org`, and as a last resort the page t
 1. The content script `content/doi-finder.js` finds the page DOI (priority:
    metadata → JSON-LD → canonical/URL → links → text). A DOI from links/text counts
    as the article DOI only if it is the only one on the page; several distinct DOIs
-   there mean a list page, so no article DOI is chosen.
+   there mean a list page, and the selection window is offered instead. Titles for
+   that window are taken from the page around each DOI.
 2. The background page `background/background.js` requests
    `https://<mirror>/<doi>` (with the user's cookies), and `lib/scihub.js` looks for
    `meta[name=citation_pdf_url]`, `object[type=application/pdf]`, `#pdf`
@@ -95,6 +101,7 @@ lib/doi.js                 DOI regex, cleanDOI, extraction from URL/text
 lib/scihub.js              mirror request and PDF link parsing
 lib/settings.js            settings (storage.sync), mirror list
 popup/                     toolbar popup: open PDF + settings (also the options page)
+select/                    selection window for list pages
 _locales/{en,ru}/          localisation
 icons/                     icons
 ```

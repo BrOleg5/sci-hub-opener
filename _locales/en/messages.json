@@ -2,6 +2,7 @@
   "extName": { "message": "Sci-Hub PDF Opener" },
   "extDescription": { "message": "Opens the PDF of the current article directly from Sci-Hub storage using the page's DOI." },
   "actionTitle": { "message": "Open this article in Sci-Hub (PDF)" },
+  "actionTitleList": { "message": "Select articles to open in Sci-Hub ($1 found)" },
   "commandOpen": { "message": "Open current article in Sci-Hub" },
 
   "menuOpenLink": { "message": "Open DOI link in Sci-Hub" },
@@ -10,6 +11,15 @@
 
   "popupOpen": { "message": "Open PDF" },
   "popupNoDoi": { "message": "No DOI on this page — type one" },
+  "popupTypeDoi": { "message": "Type a DOI" },
+  "popupSelectArticles": { "message": "Select articles… ($1 found)" },
+  "selectHeading": { "message": "Select articles to open in Sci-Hub" },
+  "selectEmpty": { "message": "No articles found on this page. Reload the page and try again." },
+  "selectAll": { "message": "Select All" },
+  "selectNone": { "message": "Deselect All" },
+  "selectCancel": { "message": "Cancel" },
+  "selectOpen": { "message": "Open" },
+  "selectOpenCount": { "message": "Open ($1)" },
   "popupEditMirrors": { "message": "Edit mirror list" },
   "optMirrorHeading": { "message": "Mirror" },
   "optCustomMirror": { "message": "Custom:" },

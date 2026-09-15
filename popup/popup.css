@@ -114,6 +114,16 @@ button.primary {
   font-weight: 600;
 }
 
+.select-articles {
+  width: 100%;
+  margin-top: 6px;
+  padding: 4px 8px;
+}
+
+.select-articles[hidden] {
+  display: none;
+}
+
 .saved {
   position: fixed;
   right: 12px;

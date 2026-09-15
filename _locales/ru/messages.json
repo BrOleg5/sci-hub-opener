@@ -2,6 +2,7 @@
   "extName": { "message": "Sci-Hub PDF Opener" },
   "extDescription": { "message": "Открывает PDF текущей статьи напрямую из хранилища Sci-Hub по DOI страницы." },
   "actionTitle": { "message": "Открыть эту статью в Sci-Hub (PDF)" },
+  "actionTitleList": { "message": "Выбрать статьи для открытия в Sci-Hub (найдено: $1)" },
   "commandOpen": { "message": "Открыть текущую статью в Sci-Hub" },
 
   "menuOpenLink": { "message": "Открыть DOI-ссылку в Sci-Hub" },
@@ -10,6 +11,15 @@
 
   "popupOpen": { "message": "Открыть PDF" },
   "popupNoDoi": { "message": "На странице нет DOI — введите вручную" },
+  "popupTypeDoi": { "message": "Введите DOI" },
+  "popupSelectArticles": { "message": "Выбрать статьи… (найдено: $1)" },
+  "selectHeading": { "message": "Выберите статьи для открытия в Sci-Hub" },
+  "selectEmpty": { "message": "На странице не найдено статей. Обновите страницу и попробуйте снова." },
+  "selectAll": { "message": "Выбрать все" },
+  "selectNone": { "message": "Снять все" },
+  "selectCancel": { "message": "Отмена" },
+  "selectOpen": { "message": "Открыть" },
+  "selectOpenCount": { "message": "Открыть ($1)" },
   "popupEditMirrors": { "message": "Редактировать список зеркал" },
   "optMirrorHeading": { "message": "Зеркало" },
   "optCustomMirror": { "message": "Своё:" },

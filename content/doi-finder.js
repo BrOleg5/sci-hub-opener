@@ -266,7 +266,8 @@
     browser.runtime.sendMessage({ type: "scihubPdf", url }).catch(() => {});
   }
 
-  // Badge support: report the page DOI to the background page.
+  // Badge and address-bar button: report the article DOI (or, on list pages,
+  // how many DOIs there are) to the background page.
   let lastReported;
   function report() {
     reportSciHubPdf();
@@ -276,9 +277,12 @@
     } catch (e) {
       return;
     }
-    if (result.primary === lastReported) return;
-    lastReported = result.primary;
-    browser.runtime.sendMessage({ type: "doiFound", doi: result.primary }).catch(() => {});
+    const key = result.primary + "|" + result.all.length;
+    if (key === lastReported) return;
+    lastReported = key;
+    browser.runtime
+      .sendMessage({ type: "doiFound", doi: result.primary, count: result.all.length })
+      .catch(() => {});
   }
 
   report();

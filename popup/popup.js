@@ -34,20 +34,42 @@
 
   /* ---------- open PDF for current tab / typed DOI ---------- */
 
-  async function loadTabDoi() {
+  async function loadTabDois() {
     const input = $("doi");
-    input.placeholder = i18n("popupNoDoi");
+    let result = { primary: null, all: [] };
     try {
-      const doi = await browser.runtime.sendMessage({ type: "getTabDoi" });
-      if (doi) {
-        input.value = doi;
-        $("open").disabled = false;
-        return;
-      }
+      result = (await browser.runtime.sendMessage({ type: "getTabDois" })) || result;
     } catch (e) {
       // background not reachable; leave the field empty
     }
     $("open").disabled = false;
+    if (result.primary) {
+      input.value = result.primary;
+    } else if (result.all.length > 1) {
+      input.placeholder = i18n("popupTypeDoi");
+      showSelectButton(result.all.length);
+    } else {
+      input.placeholder = i18n("popupNoDoi");
+    }
+  }
+
+  // List page (search results, table of contents, …): pick in the selection window.
+  function showSelectButton(count) {
+    const button = $("select-articles");
+    button.textContent = i18n("popupSelectArticles", [String(count)]);
+    button.addEventListener("click", async () => {
+      try {
+        await browser.runtime.sendMessage({ type: "openSelectWindow" });
+      } finally {
+        window.close();
+      }
+    });
+    button.hidden = false;
+  }
+
+  async function openDoi(doi) {
+    await browser.runtime.sendMessage({ type: "openDoi", doi });
+    window.close();
   }
 
   async function openPdf() {
@@ -56,8 +78,7 @@
       $("doi").focus();
       return;
     }
-    await browser.runtime.sendMessage({ type: "openDoi", doi });
-    window.close();
+    await openDoi(doi);
   }
 
   $("open").addEventListener("click", () => openPdf().catch(console.error));
@@ -220,5 +241,5 @@
 
   $("open").disabled = true;
   load().catch(console.error);
-  loadTabDoi().catch(console.error);
+  loadTabDois().catch(console.error);
 })();
