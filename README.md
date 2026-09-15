@@ -1,107 +1,152 @@
-# Sci-Hub Opener (Firefox)
+# Sci-Hub Opener
+
+Open the PDF of a scientific article in Sci-Hub with one click, straight from the
+page of a journal, database, conference or any other site that shows the article's
+DOI. The PDF opens on its own, without the Sci-Hub bottom panel.
 
 > [!CAUTION]
 > This project's code is 100% AI-generated.
 
-This extension opens the PDF of a scientific article **directly from Sci-Hub
-storage** (`https://<mirror>/storage/…/….pdf` or `/downloads/…/….pdf`), without the
-Sci-Hub bottom panel. The DOI is extracted from any page the same way the Zotero
-Connector does it: meta tags (`citation_doi`, `dc.identifier`, `prism.doi`, …),
-JSON-LD, canonical link/URL, links to `doi.org`, and as a last resort the page text.
-
 ## Features
 
-- **Address-bar button** — on article pages (journals, databases, conference
-  proceedings and the like) it opens the PDF. On list pages (search results, tables
-  of contents, book chapters) it shows a folder icon, like the Zotero connector, and
-  opens a window listing the articles found: tick the ones you need and press "Open"
-  to get each PDF in its own tab. Hidden on all other pages.
-- **Toolbar button** — opens a popup with the DOI of the current article (editable),
-  an "Open PDF" button and all settings. On list pages the popup has a
-  "Select articles…" button that opens the same selection window. On article pages
-  the icon shows a "DOI" badge (the DOI itself is in the tooltip). The same page
-  serves as the options page in the Add-ons Manager.
-- **Keyboard shortcut** `Ctrl+Shift+L` — same as the address-bar button (change it
-  under "Manage Extension Shortcuts").
-- **Context menu** (items appear only where a DOI is present):
-  - on a DOI link (`doi.org/…`, `…/doi/10.…` or a DOI in the link text) — "Open DOI link in Sci-Hub";
-  - on selected text containing a DOI — "Open selected DOI in Sci-Hub";
-  - on a page with a detected DOI / on the extension button — "Open this article in Sci-Hub".
-- **Mirror selection** from an editable list or a custom mirror; availability check.
-- **Fallback**: if Sci-Hub did not return a PDF (article missing, robot check, mirror
-  down), the plain page `https://<mirror>/<doi>` is opened instead.
-- Opens in a new tab (next to the current one) or in the current tab — configurable.
-- UI languages: English and Russian.
+- **One click on article pages.** A button appears in the address bar when you are
+  on an article page. Click it (or press `Ctrl+Shift+L`) to open the PDF.
+- **Pick from lists.** On search results, tables of contents or book chapter lists
+  the address-bar button turns into a folder icon. It opens a window with the
+  articles found on the page: tick the ones you need and press **Open** to get each
+  PDF in its own tab.
+- **Any DOI link or text.** Right-click a DOI link and choose **Open DOI link in
+  Sci-Hub**, or select text containing a DOI and choose **Open selected DOI in
+  Sci-Hub**. Menu items appear only where there is a DOI.
+- **Toolbar popup.** Shows the DOI of the current article (you can edit it or type
+  your own) and holds all settings. On article pages the toolbar icon shows a
+  "DOI" badge.
+- **Mirror of your choice.** Pick a Sci-Hub mirror from the list, add your own,
+  and check which mirrors are reachable.
+- **Graceful fallback.** If Sci-Hub has no PDF for an article, the regular Sci-Hub
+  page opens instead so you can see why.
+- English and Russian interface.
 
-## Installation
+## Usage
 
-### Temporarily (for development)
+1. Open an article page, for example on a publisher's site or PubMed.
+2. Click the Sci-Hub Opener button in the address bar, or press `Ctrl+Shift+L`.
+3. The PDF opens in a new tab.
 
-1. Open `about:debugging#/runtime/this-firefox`.
-2. "Load Temporary Add-on…" → pick `manifest.json` from this folder.
-3. The button appears on the toolbar; the extension lives until Firefox restarts.
+On a page with several articles, the same button opens the selection window.
 
-### Permanently
+### First use of a mirror: "Are you a robot?"
 
-1. Install [web-ext](https://extensionworkshop.com/documentation/develop/getting-started-with-web-ext/):
-   `npm install --global web-ext`.
-2. Build the package: `web-ext build` (produces `web-ext-artifacts/*.zip`).
-3. Sign it on AMO (`web-ext sign --channel unlisted --api-key … --api-secret …`)
-   or install the unsigned `.xpi` in Firefox Developer Edition / Nightly with
-   `xpinstall.signatures.required = false`.
+Sci-Hub asks new visitors to confirm they are not a robot and remembers the answer
+for a while. The first time you open an article on a mirror:
 
-## How it works
+1. The regular Sci-Hub page opens with the "Are you a robot?" question.
+2. Click **No**. The page reloads with the article.
+3. The extension switches that tab to the PDF by itself.
 
-1. The content script `content/doi-finder.js` finds the page DOI (priority:
-   metadata → JSON-LD → canonical/URL → links → text). A DOI from links/text counts
-   as the article DOI only if it is the only one on the page; several distinct DOIs
-   there mean a list page, and the selection window is offered instead. Titles for
-   that window are taken from the page around each DOI.
-2. The background page `background/background.js` requests
-   `https://<mirror>/<doi>` (with the user's cookies), and `lib/scihub.js` looks for
-   `meta[name=citation_pdf_url]`, `object[type=application/pdf]`, `#pdf`
-   (`embed`/`iframe`), `onclick="location.href='…pdf'"` or any URL of the form
-   `/storage/…pdf` / `/downloads/…pdf`, normalises it (drops `#…` and
-   `?download=true`) and opens it in a tab.
-3. If the mirror responds with `application/pdf` right away, the final response URL
-   is opened.
+After that, PDFs open right away.
 
-## "Are you a robot?" check
+### Settings
 
-Sci-Hub shows new sessions a robot-check page (ALTCHA) and remembers the result in
-a cookie. The first run on a new mirror usually goes like this:
+Click the Sci-Hub Opener icon on the toolbar:
 
-1. The extension finds no PDF and opens the plain Sci-Hub page.
-2. You click "No" on the "Are you a robot?" question. The page reloads with the article.
-3. The extension notices the embedded PDF in that tab and navigates to the direct
-   storage PDF URL by itself.
+- **Mirror**: choose a mirror, enter your own, check availability, or edit the
+  mirror list.
+- **Open PDF in**: a new tab (default) or the current tab.
+- **"DOI" badge** on the toolbar icon: on or off.
+- **Request timeout**: how long to wait for a mirror.
 
-Subsequent clicks open the PDF immediately for as long as the cookie is valid.
+To change the keyboard shortcut, open the Add-ons Manager, click the gear icon
+and choose **Manage Extension Shortcuts**.
 
-## Limitations
+### Limitations
 
-- Mirrors change and not all of them are reachable from every network; the default
-  list can be edited in the settings, and availability can be checked with a button.
-- Articles newer than 2021–2022 are usually missing from Sci-Hub.
+- Sci-Hub mirrors change, and not every mirror is reachable from every network.
+  If PDFs stop opening, try another mirror in the settings.
+- Articles published after 2021–2022 are usually not available in Sci-Hub.
 
-## Tests
+### Permissions and privacy
 
-```
-node test/doi.test.js
-npx web-ext lint --ignore-files "test/**"
-```
+The add-on asks for access to your data on all websites. It needs this to find the
+DOI on any article page and to load pages from the Sci-Hub mirror you chose.
 
-## Layout
+- Pages are scanned only inside your browser; nothing from them is sent anywhere.
+- A DOI is sent only to your chosen Sci-Hub mirror, and only when you ask to open
+  an article. The availability check just opens each mirror's home page.
+- The add-on collects no data and has no analytics.
+
+## Development
+
+### Project layout
 
 ```
 manifest.json
-background/background.js   menus, buttons, commands, tab handling, badge
-content/doi-finder.js      DOI extraction from the page
-lib/doi.js                 DOI regex, cleanDOI, extraction from URL/text
+background/background.js   menus, buttons, shortcut, tab handling, badge, selection window
+content/doi-finder.js      DOI and title extraction from the page
+lib/doi.js                 DOI regex, cleanDOI, extraction from URL/text, list-page rules
 lib/scihub.js              mirror request and PDF link parsing
 lib/settings.js            settings (storage.sync), mirror list
 popup/                     toolbar popup: open PDF + settings (also the options page)
 select/                    selection window for list pages
 _locales/{en,ru}/          localisation
 icons/                     icons
+test/                      unit tests and saved Sci-Hub pages
 ```
+
+### How it works
+
+1. **Finding the DOI.** The content script `content/doi-finder.js` looks for DOIs
+   in this order: meta tags (`citation_doi`,
+   `dc.identifier`, `prism.doi`, …), JSON-LD, canonical link and page URL, links,
+   page text.
+2. **Article or list page.** A DOI from metadata or the URL is the article DOI.
+   A DOI from links or text counts only if it is the only one on the page; several
+   distinct DOIs mean a list page. On list pages the address-bar button gets a
+   folder icon and opens `select/`, where titles are taken from the list item
+   around each DOI (link text, heading or title-like element, short reference
+   entry).
+3. **Getting the PDF.** The background page requests `https://<mirror>/<doi>`
+   with the user's cookies. `lib/scihub.js` looks for `meta[name=citation_pdf_url]`,
+   `object[type=application/pdf]`, `#pdf` (`embed`/`iframe`),
+   `onclick="location.href='…pdf'"` or any `/storage/…pdf` / `/downloads/…pdf` URL,
+   normalises it (drops `#…` and `?download=true`) and opens it. If the mirror
+   answers with `application/pdf` directly, the final response URL is opened.
+4. **Fallback and robot check.** Without a PDF link (article missing, ALTCHA robot
+   check, mirror down) the plain Sci-Hub page opens. The tab is remembered for
+   15 minutes: once the content script sees an embedded storage PDF there, the
+   background page navigates the tab to it.
+
+Several articles picked in the selection window are resolved at most three at a
+time and opened next to the list page in the picked order.
+
+### Load for development
+
+1. Open `about:debugging#/runtime/this-firefox`.
+2. Click **Load Temporary Add-on…** and pick `manifest.json` from this folder.
+3. The add-on stays loaded until Firefox restarts. After code changes, click
+   **Reload** on the same page.
+
+### Tests
+
+Unit tests need only Node.js:
+
+```
+node test/doi.test.js
+```
+
+They cover DOI parsing, list-page rules, title cleanup and PDF link extraction,
+including pages saved from sci-hub.ru in `test/fixtures/`.
+
+### Lint
+
+```
+npx web-ext lint --ignore-files "test/**"
+```
+
+### Build
+
+```
+npx web-ext build --ignore-files "test/**"
+```
+
+The package is written to `web-ext-artifacts/`.
