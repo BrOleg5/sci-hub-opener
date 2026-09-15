@@ -48,8 +48,9 @@ JSON-LD, canonical link/URL, links to `doi.org`, and as a last resort the page t
 ## How it works
 
 1. The content script `content/doi-finder.js` finds the page DOI (priority:
-   metadata → JSON-LD → canonical/URL → links → text; when several candidates come
-   from links/text, the most frequent one wins).
+   metadata → JSON-LD → canonical/URL → links → text). A DOI from links/text counts
+   as the article DOI only if it is the only one on the page; several distinct DOIs
+   there mean a list page, so no article DOI is chosen.
 2. The background page `background/background.js` requests
    `https://<mirror>/<doi>` (with the user's cookies), and `lib/scihub.js` looks for
    `meta[name=citation_pdf_url]`, `object[type=application/pdf]`, `#pdf`

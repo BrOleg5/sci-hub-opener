@@ -37,7 +37,7 @@
       );
       for (const el of nodes) {
         const doi = D.extractDoi(el.getAttribute("content"));
-        if (doi && !out.includes(doi)) out.push(doi);
+        D.pushUnique(out, doi);
       }
     }
     return out;
@@ -54,7 +54,7 @@
       const v = value[key];
       if (typeof v === "string") {
         const doi = D.extractDoi(v);
-        if (doi && !out.includes(doi)) out.push(doi);
+        D.pushUnique(out, doi);
       } else if (v && typeof v === "object") {
         walkJsonLd(v, out, depth + 1);
       }
@@ -72,7 +72,7 @@
       } catch (e) {
         // Malformed JSON-LD: fall back to a plain text scan of the block.
         for (const doi of D.extractAllDois(el.textContent)) {
-          if (!out.includes(doi)) out.push(doi);
+          D.pushUnique(out, doi);
         }
       }
     }
@@ -85,23 +85,20 @@
     const sources = [canonical && canonical.href, location.href];
     for (const src of sources) {
       const doi = src && D.extractDoiFromUrl(src);
-      if (doi && !out.includes(doi)) out.push(doi);
+      D.pushUnique(out, doi);
     }
     return out;
   }
 
-  function linkDois(counts, order) {
+  function linkDois(out) {
     for (const a of document.querySelectorAll("a[href]")) {
       const href = a.getAttribute("href") || "";
       if (href.indexOf("10.") === -1 && !/doi/i.test(href)) continue;
-      const doi = D.extractDoiFromUrl(a.href);
-      if (!doi) continue;
-      if (!counts.has(doi)) order.push(doi);
-      counts.set(doi, (counts.get(doi) || 0) + 1);
+      D.pushUnique(out, D.extractDoiFromUrl(a.href));
     }
   }
 
-  function textDois(counts, order) {
+  function textDois(out) {
     const rootNode = document.body || document.documentElement;
     if (!rootNode) return;
     const walker = document.createTreeWalker(rootNode, NodeFilter.SHOW_TEXT, {
@@ -115,43 +112,26 @@
     let visited = 0;
     while ((node = walker.nextNode()) && visited++ < MAX_TEXT_NODES) {
       for (const doi of D.extractAllDois(node.nodeValue)) {
-        if (!counts.has(doi)) order.push(doi);
-        counts.set(doi, (counts.get(doi) || 0) + 1);
+        D.pushUnique(out, doi);
       }
     }
   }
 
-  /** Returns { primary, all, source }. */
+  /**
+   * Returns { primary, all, source }. `primary` is null on list pages
+   * (several DOIs in links/text and none in metadata or the URL).
+   */
   function findDois() {
-    const tier1 = metaDois().concat(jsonLdDois());
-    const tier2 = urlDois();
+    const metadata = [];
+    for (const doi of metaDois().concat(jsonLdDois())) D.pushUnique(metadata, doi);
+    const fromUrl = urlDois();
+    const onPage = [];
+    linkDois(onPage);
+    textDois(onPage);
 
-    const counts = new Map();
-    const order = [];
-    linkDois(counts, order);
-    textDois(counts, order);
-
-    let primary = null;
-    let source = null;
-    if (tier1.length) {
-      primary = tier1[0];
-      source = "metadata";
-    } else if (tier2.length) {
-      primary = tier2[0];
-      source = "url";
-    } else if (order.length) {
-      let best = order[0];
-      for (const doi of order) {
-        if (counts.get(doi) > counts.get(best)) best = doi;
-      }
-      primary = best;
-      source = "page";
-    }
-
+    const { primary, source } = D.choosePrimaryDoi(metadata, fromUrl, onPage);
     const all = [];
-    for (const doi of [].concat(tier1, tier2, order)) {
-      if (!all.includes(doi)) all.push(doi);
-    }
+    for (const doi of [].concat(metadata, fromUrl, onPage)) D.pushUnique(all, doi);
     return { primary, all, source };
   }
 

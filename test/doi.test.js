@@ -59,6 +59,18 @@ check(
 );
 check("text with html-like", D.extractAllDois("doi:10.1000/abc</a>"), ["10.1000/abc"]);
 
+// pushUnique
+const uniq = [];
+for (const d of ["10.1000/ABC", "10.1000/abc", null, "10.1000/xyz", "10.1000/xyz"]) D.pushUnique(uniq, d);
+check("pushUnique case-insensitive", uniq, ["10.1000/ABC", "10.1000/xyz"]);
+
+// choosePrimaryDoi
+check("primary from metadata beats page list", D.choosePrimaryDoi(["10.1000/meta"], [], ["10.1000/a", "10.1000/b"]), { primary: "10.1000/meta", source: "metadata" });
+check("primary from url", D.choosePrimaryDoi([], ["10.1000/url"], ["10.1000/a", "10.1000/b"]), { primary: "10.1000/url", source: "url" });
+check("single page doi is primary", D.choosePrimaryDoi([], [], ["10.1000/only"]), { primary: "10.1000/only", source: "page" });
+check("list page has no primary", D.choosePrimaryDoi([], [], ["10.1000/a", "10.1000/b"]), { primary: null, source: "multiple" });
+check("no doi at all", D.choosePrimaryDoi([], [], []), { primary: null, source: null });
+
 // Sci-Hub URL helpers
 check("article url", H.buildArticleUrl("https://sci-hub.se", "10.1016/j.cell.2015.02.028"), "https://sci-hub.se/10.1016/j.cell.2015.02.028");
 check("article url with <>", H.buildArticleUrl("https://sci-hub.se/", "10.1002/(SICI)1097-0258(19980415)17:7<857::AID-SIM777>3.0.CO;2-E"), "https://sci-hub.se/10.1002/(SICI)1097-0258(19980415)17:7%3C857::AID-SIM777%3E3.0.CO;2-E");
