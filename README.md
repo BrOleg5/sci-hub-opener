@@ -82,6 +82,7 @@ DOI on any article page and to load pages from the Sci-Hub mirror you chose.
 ```
 manifest.json
 package.json               npm scripts: build, lint, start, test
+.github/workflows/         release workflow
 background/background.js   menus, buttons, shortcut, tab handling, badge, selection window
 content/doi-finder.js      DOI and title extraction from the page
 lib/doi.js                 DOI regex, cleanDOI, extraction from URL/text, list-page rules
@@ -166,3 +167,21 @@ npm run build
 
 The package is written to `web-ext-artifacts/sci-hub-opener.xpi`. Tests, the
 README and npm files are left out of it.
+
+### Release
+
+Push a tag matching the version in `manifest.json` to run the tests, lint, build
+the XPI and publish it in GitHub Releases. For example, for version `1.0.0`:
+
+```
+git tag v1.0.0
+git push origin v1.0.0
+```
+
+To run a release manually, open **Actions**, select **Release XPI**, click
+**Run workflow** and enter an existing tag matching the manifest version. A manual
+run rebuilds the tagged revision and replaces the XPI if the release already
+exists.
+
+The XPI in GitHub Releases is not signed yet, so regular Firefox cannot install
+it; see [Load for development](#load-for-development) for trying it out.

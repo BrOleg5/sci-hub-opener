@@ -1,0 +1,74 @@
+name: Release XPI
+
+on:
+  push:
+    tags:
+      - "v*"
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: "Existing release tag to build (for example, v1.0.0)"
+        required: true
+        type: string
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    name: Build and publish XPI
+    runs-on: ubuntu-latest
+    env:
+      RELEASE_TAG: ${{ github.event_name == 'workflow_dispatch' && inputs.tag || github.ref_name }}
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v7
+        with:
+          ref: refs/tags/${{ env.RELEASE_TAG }}
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version: "22"
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Validate release version
+        shell: bash
+        run: |
+          manifest_version="$(node -p 'require("./manifest.json").version')"
+          expected_tag="v${manifest_version}"
+
+          if [[ "${RELEASE_TAG}" != "${expected_tag}" ]]; then
+            echo "Release tag ${RELEASE_TAG} does not match manifest version ${manifest_version}."
+            echo "Expected tag: ${expected_tag}"
+            exit 1
+          fi
+
+      - name: Run tests
+        run: npm test
+
+      - name: Lint extension
+        run: npm run lint
+
+      - name: Build XPI
+        run: npm run build
+
+      - name: Publish GitHub release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          xpi_path="web-ext-artifacts/sci-hub-opener.xpi"
+
+          if gh release view "${RELEASE_TAG}" >/dev/null 2>&1; then
+            gh release upload "${RELEASE_TAG}" "${xpi_path}" --clobber
+          else
+            gh release create "${RELEASE_TAG}" "${xpi_path}" \
+              --generate-notes \
+              --title "${RELEASE_TAG}" \
+              --verify-tag
+          fi
