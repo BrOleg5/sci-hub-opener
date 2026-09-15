@@ -24,8 +24,6 @@
   },
 
   "permissions": [
-    "activeTab",
-    "tabs",
     "storage",
     "contextMenus",
     "<all_urls>"
