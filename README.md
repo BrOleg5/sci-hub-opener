@@ -226,5 +226,5 @@ stored as repository secrets:
 
 Downloading the signed XPI and updating releases uses the built-in `GITHUB_TOKEN`.
 
-[AMO]: https://addons.mozilla.org/ru/firefox/addon/sci-hub-opener/
+[AMO]: https://addons.mozilla.org/en/firefox/addon/sci-hub-opener/
 [Releases]: https://github.com/BrOleg5/sci-hub-opener/releases
