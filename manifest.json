@@ -2,7 +2,7 @@
   "manifest_version": 2,
   "name": "__MSG_extName__",
   "description": "__MSG_extDescription__",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "default_locale": "en",
   "homepage_url": "https://github.com/BrOleg5/sci-hub-opener",
 
