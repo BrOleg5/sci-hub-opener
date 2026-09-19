@@ -1,0 +1,43 @@
+name: Attach signed XPI
+
+# Catches up with releases whose AMO review finished after the release workflow
+# stopped waiting: attaches the signed XPI and publishes the draft release.
+
+on:
+  schedule:
+    - cron: "17 */6 * * *"
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: "Release tag to attach the signed XPI to (default: all pending drafts)"
+        required: false
+        type: string
+
+permissions:
+  contents: write
+
+jobs:
+  attach:
+    name: Attach signed XPI to pending releases
+    runs-on: ubuntu-latest
+    env:
+      GH_TOKEN: ${{ github.token }}
+      RELEASE_TAG: ${{ inputs.tag }}
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v7
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version: "22"
+
+      - name: Attach signed XPI
+        shell: bash
+        run: |
+          if [[ -n "${RELEASE_TAG}" ]]; then
+            node scripts/publish-signed-xpi.mjs --tag "${RELEASE_TAG}"
+          else
+            node scripts/publish-signed-xpi.mjs --all-pending
+          fi
