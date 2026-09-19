@@ -31,6 +31,13 @@ DOI. The PDF opens on its own, without the Sci-Hub bottom panel.
   page opens instead so you can see why.
 - English and Russian interface.
 
+## Install
+
+Install from [addons.mozilla.org][AMO], or download the XPI attached to a
+[GitHub release][Releases] and open it in Firefox. Both files are the same build
+signed by Mozilla, so Firefox installs either one and keeps the add-on up to date
+automatically through addons.mozilla.org.
+
 ## Usage
 
 1. Open an article page, for example on a publisher's site or PubMed.
@@ -85,8 +92,10 @@ DOI on any article page and to load pages from the Sci-Hub mirror you chose.
 
 ```
 manifest.json
-package.json               npm scripts: build, lint, start, test
-.github/workflows/         release workflow
+package.json               npm scripts: build, lint, start, sign, test
+web-ext-config.cjs         shared web-ext options (ignored files, package name)
+scripts/                   release helper scripts
+.github/workflows/         release and signing workflows
 background/background.js   menus, buttons, shortcut, tab handling, badge, selection window
 content/doi-finder.js      DOI and title extraction from the page
 lib/doi.js                 DOI regex, cleanDOI, extraction from URL/text, list-page rules
@@ -169,25 +178,53 @@ npm run lint
 npm run build
 ```
 
-The package is written to `web-ext-artifacts/sci-hub-opener.xpi`. Tests, the
-README and npm files are left out of it.
+The package is written to `web-ext-artifacts/sci-hub-opener.xpi`. Tests, scripts,
+the README and npm files are left out of it. The list of excluded files lives in
+`web-ext-config.cjs` and is shared by `build`, `lint`, `start` and `sign`, so the
+package uploaded to addons.mozilla.org has exactly the same contents.
 
 ### Release
 
-Push a tag matching the version in `manifest.json` to run the tests, lint, build
-the XPI and publish it in GitHub Releases. For example, for version `1.0.0`:
+Push a tag matching the version in `manifest.json`. For example, for version
+`1.0.0`:
 
 ```
 git tag v1.0.0
 git push origin v1.0.0
 ```
 
-To run a release manually, open **Actions**, select **Release XPI**, click
-**Run workflow** and enter an existing tag matching the manifest version. A manual
-run rebuilds the tagged revision and replaces the XPI if the release already
-exists.
+The **Release XPI** workflow then:
 
-The XPI in GitHub Releases is not signed yet, so regular Firefox cannot install
-it; see [Load for development](#load-for-development) for trying it out.
+1. runs the tests and the lint;
+2. creates a **draft** GitHub release for the tag (if it does not exist yet);
+3. uploads the version to addons.mozilla.org (`npm run sign`) without waiting for
+   the review;
+4. waits up to 20 minutes for Mozilla to sign the version, then downloads the
+   signed XPI from AMO, checks its sha256, attaches it to the release and
+   publishes the release.
+
+Review on AMO can take days. If the version is not signed within those 20 minutes,
+the workflow ends successfully and leaves the release as a draft. The **Attach
+signed XPI** workflow runs every 6 hours, finds draft releases with a `v*` tag and
+no XPI attached, and finishes the job once Mozilla has signed them. It can also be
+started by hand from **Actions** (optionally for a single tag). Both workflows use
+`scripts/publish-signed-xpi.mjs`, which takes the add-on ID from `manifest.json`,
+so re-running them is safe.
+
+To run a release manually, open **Actions**, select **Release XPI**, click
+**Run workflow** and enter an existing tag matching the manifest version. Uploading
+a version that AMO already knows is not treated as a failure.
+
+### Repository secrets
+
+Uploading to AMO needs an API credential from
+[Developer Hub → Manage API Keys](https://addons.mozilla.org/developers/addon/api/key/),
+stored as repository secrets:
+
+- `AMO_JWT_ISSUER` — the JWT issuer (`user:…`), passed as `WEB_EXT_API_KEY`;
+- `AMO_JWT_SECRET` — the JWT secret, passed as `WEB_EXT_API_SECRET`.
+
+Downloading the signed XPI and updating releases uses the built-in `GITHUB_TOKEN`.
 
 [AMO]: https://addons.mozilla.org/ru/firefox/addon/sci-hub-opener/
+[Releases]: https://github.com/BrOleg5/sci-hub-opener/releases
