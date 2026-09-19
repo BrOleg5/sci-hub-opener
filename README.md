@@ -1,11 +1,15 @@
 # Sci-Hub Opener
 
+[![Badge Mozilla](https://img.shields.io/amo/v/sci-hub-opener?label=Firefox&logo=firefox)][AMO]
+
+[![Firefox Get The Add-on](https://extensionworkshop.com/assets/img/documentation/publish/get-the-addon-178x60px.dad84b42.png)][AMO]
+
 Open the PDF of a scientific article in Sci-Hub with one click, straight from the
 page of a journal, database, conference or any other site that shows the article's
 DOI. The PDF opens on its own, without the Sci-Hub bottom panel.
 
-> [!CAUTION]
-> This project's code is 100% AI-generated.
+> [!NOTE]
+> The code for this extension was written entirely by AI coding agents under the developer’s direction.
 
 ## Features
 
@@ -185,3 +189,5 @@ exists.
 
 The XPI in GitHub Releases is not signed yet, so regular Firefox cannot install
 it; see [Load for development](#load-for-development) for trying it out.
+
+[AMO]: https://addons.mozilla.org/ru/firefox/addon/sci-hub-opener/
